@@ -1,0 +1,14 @@
+# Media files
+*.mp4
+*.mov
+*.avi
+
+# Images (if using Cloudinary)
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# OS junk
+.DS_Store
+Thumbs.db
