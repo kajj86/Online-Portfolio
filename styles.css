@@ -36,26 +36,203 @@ section {
 }
 
 /* =================================================
-   HERO SECTION
+   HERO SECTION (FIXED & SCOPED)
 ================================================= */
 .hero {
-    text-align: center;
-    padding-bottom: 20px;
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  place-items: center; /* TRUE CENTER */
+  position: relative;
+  background: #000;
+  overflow: hidden; /* scanlines only affect hero */
 }
 
-.hero h1 {
-    font-size: 5rem;
-    background: linear-gradient(90deg, #ff69b4, #00bfff, #daa520, #8a2be2, #ff69b4);
-    background-size: 200% 200%;
-    animation: gradientShift 3s infinite ease;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+/* Center content */
+.hero-center {
+  display: flex;                /* ✅ FIX */
+  flex-direction: column;
+  align-items: center;          /* ✅ horizontal center */
+  text-align: center;
+  line-height: 1.05;
 }
 
-.hero p {
-    font-size: 1.4rem;
-    opacity: 0.9;
+
+/* ================= GLITCH TITLE ================= */
+.glitch {
+  position: relative;
+  font-size: clamp(4rem, 10vw, 9rem);
+  font-weight: 700;
+  color: #ffffff;
+  animation: glitchSkew 5s infinite;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.glitch::before {
+  left: -2px;
+  text-shadow: -5px 0 magenta;
+  animation:
+    noise1 3s linear infinite alternate-reverse,
+    glitchSkew 5s 0.05s infinite;
+}
+
+.glitch::after {
+  left: 2px;
+  text-shadow: -5px 0 cyan;
+  animation:
+    noise2 3s linear infinite alternate-reverse,
+    glitchSkew 5s infinite;
+}
+
+/* ================= GLITCH BURST (SYNC STATE) ================= */
+.glitch-active {
+  animation-duration: 0.6s; /* faster glitch */
+}
+
+.glitch-active::before {
+  text-shadow: -8px 0 magenta;
+}
+
+.glitch-active::after {
+  text-shadow: -8px 0 cyan;
+}
+
+
+/* ================= KEYFRAMES ================= */
+@keyframes glitchSkew {
+  1% { transform: rotateX(10deg) skewX(90deg); }
+  2% { transform: rotateX(0deg) skewX(0deg); }
+}
+
+@keyframes glitchSub {
+  1% { transform: rotateX(10deg) skewX(70deg); }
+  2% { transform: rotateX(0deg) skewX(0deg); }
+}
+
+@keyframes scanMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(2%); }
+}
+
+/* ================= NOISE SLICES ================= */
+@keyframes noise1 {
+  0% { clip-path: inset(10% 0 85% 0); }
+  20% { clip-path: inset(30% 0 55% 0); }
+  40% { clip-path: inset(50% 0 30% 0); }
+  60% { clip-path: inset(70% 0 15% 0); }
+  80% { clip-path: inset(25% 0 60% 0); }
+  100% { clip-path: inset(10% 0 85% 0); }
+}
+
+@keyframes noise2 {
+  0% { clip-path: inset(80% 0 10% 0); }
+  20% { clip-path: inset(60% 0 20% 0); }
+  40% { clip-path: inset(40% 0 40% 0); }
+  60% { clip-path: inset(20% 0 60% 0); }
+  80% { clip-path: inset(55% 0 30% 0); }
+  100% { clip-path: inset(80% 0 10% 0); }
+}
+
+/* ================= ROTATING TEXT (PERFECT ALIGNMENT) ================= */
+
+.text-rotate {
+  display: inline-flex;
+  align-items: baseline;          /* same baseline for static + dynamic */
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  white-space: nowrap;
+}
+
+/* ================= STATIC TEXT ================= */
+
+.static-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.55;
+  line-height: 1;
+  margin: 0;
+}
+
+/* ================= DYNAMIC WORD SLOT ================= */
+
+.dynamic-text {
+  position: relative;
+  display: inline-block;
+  height: 1em;                    /* match text height */
+  min-width: 210px;
+  perspective: 800px;
+  line-height: 1;
+}
+
+/* ================= WORD WRAPPER ================= */
+
+.word {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* ================= LETTERS ================= */
+
+.letter {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  line-height: 1;
+  backface-visibility: hidden;
+  transform-origin: 50% 50% 20px;
+  transform: rotateX(-90deg);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ================= LETTER STATES ================= */
+
+.letter.in {
+  transform: rotateX(0deg);
+}
+
+.letter.out {
+  transform: rotateX(90deg);
+  transition: transform 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.letter.behind {
+  transform: rotateX(-90deg);
+}
+
+/* ================= ACCENT COLORS ================= */
+
+.accent-1 .letter {
+  color: #a855f7;
+}
+
+.accent-2 .letter {
+  color: #22d3ee;
+}
+
+.accent-3 .letter {
+  color: #f472b6;
+}
+
+.accent-4 .letter {
+  color: #eab308;
 }
 
 /* =================================================
@@ -104,6 +281,11 @@ section {
 
 .image-card:hover img {
     transform: scale(1.15);
+}
+
+.image-showcase {
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* =================================================
@@ -375,22 +557,414 @@ section {
     will-change: transform, text-shadow;
 }
 
-.about-socials {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 1.2rem;
+/* ================================
+   EDUCATION SECTION
+================================ */
+.education-section {
+  max-width: 1100px;
+  margin: auto;
+  padding: 4rem 2rem;
 }
 
-.about-socials a {
-    font-size: 2rem;
-    color: #fff;
-    transition: 0.3s;
+.education-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
 }
 
-.about-socials a:hover {
-    transform: scale(1.2);
-    color: #a855f7;
+/* List */
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
+
+/* Card */
+.education-card {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  padding: 2rem;
+  border-radius: 20px;
+
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 20px 40px rgba(0,0,0,0.6);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover */
+.education-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 30px 60px rgba(168, 85, 247, 0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+/* Logo */
+.education-logo {
+  width: 90px;
+  height: 90px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 16px;
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.education-logo img {
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Text */
+.education-info h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.3rem;
+}
+
+.education-level {
+  display: block;
+  font-size: 1rem;
+  opacity: 0.85;
+  margin-bottom: 0.4rem;
+}
+
+.education-info p {
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .education-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* ================================
+   PROGRAMMING SKILLS SECTION
+================================ */
+.skills-section {
+  max-width: 1400px;
+  margin: auto;
+  padding: 5rem 2rem; /* more breathing room */
+  text-align: center;
+}
+
+/* Title */
+.skills-title {
+  margin-bottom: 3rem;
+  font-size: 2.8rem;
+}
+
+/* ================================
+   SKILLS ICON GRID (BIGGER)
+================================ */
+.skills-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 2.5rem;
+
+  max-width: 1200px; /* wider grid */
+  margin: 0 auto;
+  justify-items: center;
+}
+
+/* Card */
+.skill-item {
+  width: 150px;
+  height: 150px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 24px;
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 10px 25px rgba(0,0,0,0.6);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Image icons (Cisco, Mermaid, etc.) */
+.skill-icon {
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+/* Font Awesome / Devicon icons */
+.skill-item i {
+  font-size: 5rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+/* SVG icons */
+.skill-svg {
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: 1rem;
+  filter: brightness(0) invert(1);
+}
+
+/* Label */
+.skill-item span {
+  font-size: 1rem;
+  letter-spacing: 0.14rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+/* Hover */
+.skill-item:hover {
+  transform: translateY(-8px) scale(1.05);
+  background: rgba(168, 85, 247, 0.28);
+}
+
+/* ================================
+   PROJECTS SECTION
+================================ */
+.projects-section {
+  max-width: 1400px;
+  margin: auto;
+  padding: 4rem 2rem;
+}
+
+.projects-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+/* Card */
+.project-card {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+
+  border-radius: 20px;
+  overflow: hidden;
+
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 20px 40px rgba(0,0,0,0.6);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* Hover */
+.project-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 30px 60px rgba(168, 85, 247, 0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+/* Image */
+.project-image {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  cursor: pointer;
+}
+
+.project-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Text */
+.project-info {
+  padding: 1.6rem;
+}
+
+.project-info h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.project-info p {
+  font-size: 1rem;
+  opacity: 0.85;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* ================================
+   PROJECT SLIDESHOW TRANSITION
+================================ */
+.project-slideshow {
+  width: 100%;
+  height: 220px;              /* ✅ fixed height */
+  object-fit: cover;
+
+  position: relative;         /* ❌ NOT absolute */
+  display: block;
+
+  opacity: 1;
+  transition: opacity 0.8s ease-in-out;
+}
+
+
+.project-slideshow.fade-out {
+  opacity: 0;
+}
+
+.project-slideshow.fade-in {
+  opacity: 1;
+}
+
+/* ================================
+   CONTACT SECTION
+================================ */
+.contact-section {
+  max-width: 1200px;
+  margin: auto;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.contact-title {
+  font-size: 2.6rem;
+  margin-bottom: 3rem;
+}
+
+/* Grid */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Card */
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  overflow: visible;  /* 🔥 allow email to grow outside */
+
+  padding: 1.6rem 1.8rem;
+  border-radius: 20px;
+
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    0 20px 40px rgba(0,0,0,0.6);
+
+  text-decoration: none;
+  color: #fff;
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover */
+.contact-item:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow:
+    0 30px 60px rgba(168, 85, 247, 0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+/* Icon */
+.contact-item i {
+  font-size: 2.2rem;
+  color: #a855f7;
+  flex-shrink: 0; /* ✅ prevents overlap */
+}
+
+/* Text wrapper */
+.contact-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  overflow: visible;
+  min-width: 0;
+}
+
+/* Label */
+.contact-text small {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+}
+
+/* Value */
+.contact-text span {
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* ✅ prevents spill */
+}
+
+.email-expand {
+  position: relative;
+  max-width: 240px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  transition: color 0.3s ease;
+}
+
+/* FLOATING FULL EMAIL */
+.contact-item:hover .email-expand::after {
+  content: attr(data-full);
+  position: absolute;
+
+  left: 0;
+  top: 120%;
+
+  background: #0f0f0f;
+  padding: 10px 14px;
+  border-radius: 10px;
+
+  font-size: 0.95rem;
+  color: #c084fc;
+  white-space: nowrap;
+
+  box-shadow:
+    0 15px 35px rgba(0,0,0,0.7),
+    inset 0 0 0 1px rgba(255,255,255,0.1);
+
+  z-index: 9999;
+}
+
 
 /* =======================
    JOURNAL STACK FLIP (6 PAGES)
@@ -416,7 +990,7 @@ section {
     position: relative;
     width: 320px;
     height: 440px;
-    margin: 0 auto 5rem;
+    margin: 0 auto 6.5rem;
     perspective: 1200px;
 }
 
@@ -549,9 +1123,11 @@ section {
 }
 
 .certificate-grid {
-    display: flex;
-    justify-content: center;
-    margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 3rem; /* 👈 spacing between certificates */
+  margin-top: 2.5rem;
+  flex-wrap: wrap; /* mobile-safe */
 }
 
 .certificate-card {
@@ -569,7 +1145,7 @@ section {
         inset 0 0 0 6px #3a210f;
 
     transform-style: preserve-3d;
-    transition: transform 0.45s ease, box-shadow 0.45s ease;
+    transition: transform 0.15s ease-out, box-shadow 0.3s ease;
 }
 
 /* Inner wooden lip */
@@ -580,40 +1156,23 @@ section {
     border-radius: 18px;
 
     background: linear-gradient(145deg, #2b1a10, #3a2314);
-
     box-shadow:
         inset 0 0 0 2px rgba(255,255,255,0.05),
         inset 0 10px 20px rgba(0,0,0,0.6);
 
     pointer-events: none;
-    z-index: 1;
+    transform: translateZ(15px); /* 🔥 depth */
 }
 
 /* Certificate paper */
 .certificate-card img {
     position: relative;
     z-index: 2;
-
     width: 100%;
-    height: auto;
-
     border-radius: 12px;
+
     background: #fff;
-
-    transform: translateZ(40px);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
-}
-
-/* 3D wall tilt on hover */
-.certificate-card:hover {
-    transform: perspective(1200px)
-        rotateX(6deg)
-        rotateY(-6deg)
-        scale(1.04);
-
-    box-shadow:
-        0 45px 100px rgba(168, 85, 247, 0.35),
-        inset 0 0 0 3px rgba(255,255,255,0.1);
+    transform: translateZ(40px); /* 🔥 paper floats above frame */
 }
 
 /* ================================
@@ -638,6 +1197,17 @@ section {
 
     max-width: 90vw;
     max-height: 90vh;
+}
+
+.certificate-card:hover {
+    transform: perspective(1200px)
+        rotateX(6deg)
+        rotateY(-6deg)
+        scale(1.04);
+
+    box-shadow:
+        0 45px 100px rgba(168, 85, 247, 0.35),
+        inset 0 0 0 3px rgba(255,255,255,0.1);
 }
 
 /* Certificate image */
@@ -865,9 +1435,24 @@ section {
 }
 
 @media (max-width: 768px) {
-    .footer {
+    .site-footer {
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.2rem;
         text-align: center;
     }
+
+    .footer-left,
+    .footer-right {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    margin: 0 auto;
+  }
 }
